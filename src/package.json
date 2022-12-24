@@ -1,0 +1,28 @@
+{
+  "name": "jsapi",
+  "version": "6.2.4",
+  "description": "W.I.S.E. JS API",
+  "main": "example_job.js",
+  "author": "Heartland Software Solutions Inc.",
+  "scripts": {
+    "build": "tsc",
+    "tsc": "tsc",
+    "docs": "typedoc --tsconfig tsconfig.json --readme README.md --name \"WISE Node.JS API (wise-js-api)\" --exclude \"**/node_modules\" --hideGenerator --disableSources --out nodedocs ."
+  },
+  "dependencies": {
+    "@types/luxon": "^1.26.5",
+    "@types/node": "^18.11.17",
+    "@types/semver": "^5.5.0",
+    "@types/socket.io": "^2.1.13",
+    "formidable": "^1.2.2",
+    "luxon": "^1.27.0",
+    "mqtt": "^4.2.6",
+    "npm": "^6.14.13",
+    "npm-conf": "^1.1.3",
+    "protobufjs": "6.8.8",
+    "semver": "^7.3.5",
+    "socket.io": "^2.4.1",
+    "typedoc": "^0.19.2",
+    "typescript": "^3.9.9"
+  }
+}
