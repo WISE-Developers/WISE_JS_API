@@ -69,3 +69,9 @@ const defaults_1 = wise.defaults;
 
 let serverConfig = new defaults_1.ServerConfiguration("/user/home/foo/jobs");
 ```
+
+This project actively discourages forking of our repositories. 
+Contributors do not use forks, they use Branches and Pull Requests. 
+Please review the following before any forking or to understand our contributions paradigm.
+
+https://github.com/WISE-Developers/Project_issues/blob/main/CONTRIBUTING.md
