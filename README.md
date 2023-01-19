@@ -14,7 +14,7 @@ This module can be referenced from the package.json for your project. The depend
 {
     "name": "test-project",
     "dependencies": {
-        "WISE_JS_API": "github:WISE-Developers/WISE_JS_API#7.2022.12-0"
+        "WISE_JS_API": "github:WISE-Developers/WISE_JS_API#1.0.0-beta"
     }
 }
 ```
@@ -28,7 +28,7 @@ git+https://github.com/WISE-Developers/WISE_JS_API.git
 
 2) Reference a specific commit instead of a tag
 ```
-github:WISE-Developers/WISE_JS_API#073d3e95b1b0439d67eb5a431b5bbfaa4c0c8c93
+github:WISE-Developers/WISE_JS_API#2fc44ff69b81fd9554e8dc3ae36b9c008e5aff1a
 ```
 
 3) Use the head revision of the repository
