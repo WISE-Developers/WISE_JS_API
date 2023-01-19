@@ -1,6 +1,6 @@
 {
     "name": "wise_js_api",
-    "version": "2021.07.00",
+    "version": "1.0.0-beta.0",
     "description": "W.I.S.E. JS API",
     "main": "index.js",
     "types": "index.d.ts",
