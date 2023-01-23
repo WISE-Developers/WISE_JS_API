@@ -3904,6 +3904,77 @@ export class StopModellingOptions {
     else {
       tmp = tmp + '|null';
     }
+    builder.write(StopModellingOptions.PARAM_STOPMODELLING + SocketMsg.NEWLINE);
+    builder.write(tmp + SocketMsg.NEWLINE);
+  }
+}
+
+export enum Gusting {
+  NO_GUSTING = 0,
+  AVERAGE_GUSTING = 1,
+  TIME_DERIVED_GUSTING = 2,
+  ROS_DERIVED_GUSTING = 3
+}
+
+export enum GustBias {
+  MIDDLE = 0,
+  START = 1,
+  END = 2
+}
+
+/**
+ * Options that define how and if wind gusting is applied to a scenario.
+ */
+export class GustingOptions {
+  private static readonly PARAM_GUSTING_OPTIONS = "gusting_options";
+  
+  public gusting = Gusting.NO_GUSTING;
+    
+  /**
+   * Must be available for time derived gusting.
+   */
+  public gustsPerHour: Number|null = null;
+    
+  /**
+   * Must be available for average, time derived, and ROS derived gusting.
+   * For average gusting this is a weighted averaging of wind speed and gusting. ws = ((100-percentGusting)*ws + percentGusting*gust)/100.
+   * For time derived gusting gusts will occur for (3600/gustPerHour*(percentGusting*100)) seconds per gust.
+   * For ROS derived gusting gusts will occur for (3600*(percentGusting/100)) seconds per hour.
+   */
+  public percentGusting: Number|null = null;
+    
+  /**
+   * Must be present for time and ROS derived gusting. Middle is not valid for ROS derived gusting.
+   */
+  public gustBias: GustBias|null = null;
+  
+  /**
+   * Streams the scenario to a socket.
+   * @param builder
+   */
+  public stream(builder: net.Socket): void {
+    let tmp = '';
+    tmp = tmp + (+this.gusting);
+    if (this.gustsPerHour) {
+      tmp = tmp + `|${this.gustsPerHour}`;
+    }
+    else {
+      tmp = tmp + '|null';
+    }
+    if (this.percentGusting) {
+      tmp = tmp + `|${this.percentGusting}`;
+    }
+    else {
+      tmp = tmp + '|null';
+    }
+    if (this.gustBias) {
+      tmp = tmp + `|${+this.gustBias}`;
+    }
+    else {
+      tmp = tmp + '|null';
+    }
+    builder.write(GustingOptions.PARAM_GUSTING_OPTIONS + SocketMsg.NEWLINE);
+    builder.write(tmp + SocketMsg.NEWLINE);
   }
 }
 
@@ -4090,6 +4161,10 @@ export class Scenario {
    * Conditions that will be used to end the simulation early.
    */
   public stopModellingOptions: StopModellingOptions|null = null;
+  /**
+   * Options for enabling wind gusts if available in the weather stream.
+   */
+  public gustingOptions: GustingOptions|null = null;
   /**
    * The name of the scenario that will be copied.
    */
@@ -4838,6 +4913,10 @@ export class Scenario {
     
     if (this.stopModellingOptions != null) {
       this.stopModellingOptions.stream(builder);
+    }
+    
+    if (this.gustingOptions != null) {
+      this.gustingOptions.stream(builder);
     }
     
     builder.write(Scenario.PARAM_SCENARIO_END + SocketMsg.NEWLINE);

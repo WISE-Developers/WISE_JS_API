@@ -9,7 +9,8 @@
  * For an example see index.js.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Admin = exports.StopPriority = exports.StartJobWrapper = exports.WISE = exports.JobOptions = exports.LoadBalanceType = exports.UnitSettings = exports.MassAreaUnit = exports.IntensityUnit = exports.VelocityUnit = exports.CoordinateUnit = exports.AngleUnit = exports.PercentUnit = exports.EnergyUnit = exports.MassUnit = exports.PressureUnit = exports.TemperatureUnit = exports.VolumeUnit = exports.AreaUnit = exports.DistanceUnit = exports.TimeUnit = exports.GeoServerOutputStreamInfo = exports.MqttOutputStreamInfo = exports.OutputStreamInfo = exports.WISEOutputs = exports.AssetStatsFile = exports.StatsFile = exports.StatsFileType = exports.SummaryFile = exports.VectorFile = exports.PerimeterTimeOverride = exports.VectorFileType = exports.Output_GridFile = exports.Output_FuelGridFile = exports.ExportTimeOverride = exports.Output_GridFileCompression = exports.Output_GridFileInterpolation = exports.WISEInputs = exports.FuelOption = exports.FuelOptionType = exports.Scenario = exports.StopModellingOptions = exports.StopModellingThreshold = exports.StationStream = exports.StreamOptions = exports.TimestepSettings = exports.TargetReference = exports.AssetReference = exports.LayerInfo = exports.LayerInfoOptions = exports.BurningConditions = exports.BurningConditionRelative = exports.SinglePointIgnitionOptions = exports.MultiPointIgnitionOptions = exports.PolylineIgnitionOptions = exports.IgnitionReference = exports.TargetFile = exports.AssetFile = exports.AssetShapeType = exports.Ignition = exports.IgnitionType = exports.WeatherStation = exports.WeatherStream = exports.HFFMCMethod = exports.WISEInputsFiles = exports.FuelBreak = exports.FuelBreakType = exports.FuelPatch = exports.FromFuel = exports.FuelPatchType = exports.WeatherGrid = exports.WeatherGrid_GridFile = exports.WeatherGridType = exports.WeatherGridSector = exports.WeatherPatch = exports.WeatherPatch_WindDirection = exports.WeatherPatch_WindSpeed = exports.WeatherPatch_Precipitation = exports.WeatherPatch_RelativeHumidity = exports.WeatherPatch_Temperature = exports.WeatherPatchDetails = exports.WeatherPatchType = exports.WeatherPatchOperation = exports.GridFile = exports.GridFileType = exports.VersionInfo = void 0;
+exports.FuelOptionType = exports.Scenario = exports.GustingOptions = exports.GustBias = exports.Gusting = exports.StopModellingOptions = exports.StopModellingThreshold = exports.StationStream = exports.StreamOptions = exports.TimestepSettings = exports.TargetReference = exports.AssetReference = exports.LayerInfo = exports.LayerInfoOptions = exports.BurningConditions = exports.BurningConditionRelative = exports.SinglePointIgnitionOptions = exports.MultiPointIgnitionOptions = exports.PolylineIgnitionOptions = exports.IgnitionReference = exports.TargetFile = exports.AssetFile = exports.AssetShapeType = exports.Ignition = exports.IgnitionType = exports.WeatherStation = exports.WeatherStream = exports.HFFMCMethod = exports.WISEInputsFiles = exports.FuelBreak = exports.FuelBreakType = exports.FuelPatch = exports.FromFuel = exports.FuelPatchType = exports.WeatherGrid = exports.WeatherGrid_GridFile = exports.WeatherGridType = exports.WeatherGridSector = exports.WeatherPatch = exports.WeatherPatch_WindDirection = exports.WeatherPatch_WindSpeed = exports.WeatherPatch_Precipitation = exports.WeatherPatch_RelativeHumidity = exports.WeatherPatch_Temperature = exports.WeatherPatchDetails = exports.WeatherPatchType = exports.WeatherPatchOperation = exports.GridFile = exports.GridFileType = exports.VersionInfo = void 0;
+exports.Admin = exports.StopPriority = exports.StartJobWrapper = exports.WISE = exports.JobOptions = exports.LoadBalanceType = exports.UnitSettings = exports.MassAreaUnit = exports.IntensityUnit = exports.VelocityUnit = exports.CoordinateUnit = exports.AngleUnit = exports.PercentUnit = exports.EnergyUnit = exports.MassUnit = exports.PressureUnit = exports.TemperatureUnit = exports.VolumeUnit = exports.AreaUnit = exports.DistanceUnit = exports.TimeUnit = exports.GeoServerOutputStreamInfo = exports.MqttOutputStreamInfo = exports.OutputStreamInfo = exports.WISEOutputs = exports.AssetStatsFile = exports.StatsFile = exports.StatsFileType = exports.SummaryFile = exports.VectorFile = exports.PerimeterTimeOverride = exports.VectorFileType = exports.Output_GridFile = exports.Output_FuelGridFile = exports.ExportTimeOverride = exports.Output_GridFileCompression = exports.Output_GridFileInterpolation = exports.WISEInputs = exports.FuelOption = void 0;
 /** ignore this comment */
 const fs = require("fs");
 const luxon_1 = require("luxon");
@@ -3552,11 +3553,78 @@ class StopModellingOptions {
         else {
             tmp = tmp + '|null';
         }
+        builder.write(StopModellingOptions.PARAM_STOPMODELLING + wiseGlobals_1.SocketMsg.NEWLINE);
+        builder.write(tmp + wiseGlobals_1.SocketMsg.NEWLINE);
     }
 }
 exports.StopModellingOptions = StopModellingOptions;
 StopModellingOptions.PARAM_STOPMODELLING = "stop_modelling";
+var Gusting;
+(function (Gusting) {
+    Gusting[Gusting["NO_GUSTING"] = 0] = "NO_GUSTING";
+    Gusting[Gusting["AVERAGE_GUSTING"] = 1] = "AVERAGE_GUSTING";
+    Gusting[Gusting["TIME_DERIVED_GUSTING"] = 2] = "TIME_DERIVED_GUSTING";
+    Gusting[Gusting["ROS_DERIVED_GUSTING"] = 3] = "ROS_DERIVED_GUSTING";
+})(Gusting = exports.Gusting || (exports.Gusting = {}));
+var GustBias;
+(function (GustBias) {
+    GustBias[GustBias["MIDDLE"] = 0] = "MIDDLE";
+    GustBias[GustBias["START"] = 1] = "START";
+    GustBias[GustBias["END"] = 2] = "END";
+})(GustBias = exports.GustBias || (exports.GustBias = {}));
 /**
+ * Options that define how and if wind gusting is applied to a scenario.
+ */
+class GustingOptions {
+    constructor() {
+        this.gusting = Gusting.NO_GUSTING;
+        /**
+         * Must be available for time derived gusting.
+         */
+        this.gustsPerHour = null;
+        /**
+         * Must be available for average, time derived, and ROS derived gusting.
+         * For average gusting this is a weighted averaging of wind speed and gusting. ws = ((100-percentGusting)*ws + percentGusting*gust)/100.
+         * For time derived gusting gusts will occur for (3600/gustPerHour*(percentGusting*100)) seconds per gust.
+         * For ROS derived gusting gusts will occur for (3600*(percentGusting/100)) seconds per hour.
+         */
+        this.percentGusting = null;
+        /**
+         * Must be present for time and ROS derived gusting. Middle is not valid for ROS derived gusting.
+         */
+        this.gustBias = null;
+    }
+    /**
+     * Streams the scenario to a socket.
+     * @param builder
+     */
+    stream(builder) {
+        let tmp = '';
+        tmp = tmp + (+this.gusting);
+        if (this.gustsPerHour) {
+            tmp = tmp + `|${this.gustsPerHour}`;
+        }
+        else {
+            tmp = tmp + '|null';
+        }
+        if (this.percentGusting) {
+            tmp = tmp + `|${this.percentGusting}`;
+        }
+        else {
+            tmp = tmp + '|null';
+        }
+        if (this.gustBias) {
+            tmp = tmp + `|${+this.gustBias}`;
+        }
+        else {
+            tmp = tmp + '|null';
+        }
+        builder.write(GustingOptions.PARAM_GUSTING_OPTIONS + wiseGlobals_1.SocketMsg.NEWLINE);
+        builder.write(tmp + wiseGlobals_1.SocketMsg.NEWLINE);
+    }
+}
+exports.GustingOptions = GustingOptions;
+GustingOptions.PARAM_GUSTING_OPTIONS = "gusting_options";/**
  * A simulation scenario.
  * @author "Travis Redpath"
  */
@@ -3604,6 +3672,10 @@ class Scenario {
          * Conditions that will be used to end the simulation early.
          */
         this.stopModellingOptions = null;
+        /**
+         * Options for enabling wind gusts if available in the weather stream.
+         */
+        this.gustingOptions = null;
         /**
          * The name of the scenario that will be copied.
          */
@@ -4377,6 +4449,9 @@ class Scenario {
         }
         if (this.stopModellingOptions != null) {
             this.stopModellingOptions.stream(builder);
+        }
+        if (this.gustingOptions != null) {
+            this.gustingOptions.stream(builder);
         }
         builder.write(Scenario.PARAM_SCENARIO_END + wiseGlobals_1.SocketMsg.NEWLINE);
     }
