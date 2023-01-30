@@ -1958,6 +1958,44 @@ export declare class StopModellingOptions {
      */
     stream(builder: net.Socket): void;
 }
+export declare enum Gusting {
+    NO_GUSTING = 0,
+    AVERAGE_GUSTING = 1,
+    TIME_DERIVED_GUSTING = 2,
+    ROS_DERIVED_GUSTING = 3
+}
+export declare enum GustBias {
+    MIDDLE = 0,
+    START = 1,
+    END = 2
+}
+/**
+ * Options that define how and if wind gusting is applied to a scenario.
+ */
+export declare class GustingOptions {
+    private static readonly PARAM_GUSTING_OPTIONS;
+    gusting: Gusting;
+    /**
+     * Must be available for time derived gusting.
+     */
+    gustsPerHour: Number | null;
+    /**
+     * Must be available for average, time derived, and ROS derived gusting.
+     * For average gusting this is a weighted averaging of wind speed and gusting. ws = ((100-percentGusting)*ws + percentGusting*gust)/100.
+     * For time derived gusting gusts will occur for (3600/gustPerHour*(percentGusting*100)) seconds per gust.
+     * For ROS derived gusting gusts will occur for (3600*(percentGusting/100)) seconds per hour.
+     */
+    percentGusting: Number | null;
+    /**
+     * Must be present for time and ROS derived gusting. Middle is not valid for ROS derived gusting.
+     */
+    gustBias: GustBias | null;
+    /**
+     * Streams the scenario to a socket.
+     * @param builder
+     */
+    stream(builder: net.Socket): void;
+}
 /**
  * A simulation scenario.
  * @author "Travis Redpath"
@@ -2104,6 +2142,10 @@ export declare class Scenario {
      * Conditions that will be used to end the simulation early.
      */
     stopModellingOptions: StopModellingOptions | null;
+    /**
+     * Options for enabling wind gusts if available in the weather stream.
+     */
+    gustingOptions: GustingOptions | null;
     /**
      * The name of the scenario that will be copied.
      */
