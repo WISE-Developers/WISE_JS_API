@@ -40,6 +40,7 @@ jobs:
     - name: Archive files
       run: |
         cd src
+        npm i
         npm run docs
         cd ../wise_docs
         rm -rf wise_js
