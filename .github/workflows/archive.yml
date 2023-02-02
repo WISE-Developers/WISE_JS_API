@@ -1,0 +1,92 @@
+name: Archive the source
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/checkout@v3
+      with:
+        repository: WISE-Developers/WISE_Versions
+        path: versions
+        token: ${{ secrets.WISE_PAT }}
+    - uses: actions/checkout@v3
+      with:
+        repository: WISE-Developers/wise_docs
+        path: wise_docs
+        token: ${{ secrets.WISE_PAT }}
+
+    - name: Load values from versions
+      id: version-numbers
+      shell: pwsh
+      run: |
+        $versions = ConvertFrom-StringData (Get-Content versions/versions.properties -raw)
+        echo "Updating to version $($versions.wise)"
+        echo "wise_version=$($versions.wise)" >> $env:GITHUB_OUTPUT
+      
+    - name: Archive files
+      shell: pwsh
+      run: |
+        Compress-Archive -DestinationPath ${{ steps.version-numbers.outputs.wise_version }}.zip -Path dist,proto,scripts,config,index.js,index.d.ts,package.json,package-lock.json,LICENSE
+      
+    - name: Archive files
+      run: |
+        cd src
+        npm run docs
+        cd ../wise_docs
+        rm -rf wise_js
+        mv ../src/nodedocs wise_js
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        git add *
+        git commit * -m "Update JavaScript documentation"
+
+    - name: Push documentation changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.WISE_PAT }}
+        repository: WISE-Developers/wise_docs
+        directory: wise_docs
+        tags: true
+        
+    - name: Tag the repository
+      id: last-tags
+      run: |
+        git config user.name github-actions
+        git config user.email github-actions@github.com
+        LAST_TAG=$(git describe --abbrev=0 --tags)
+        echo "last_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+        git tag -a ${{ steps.version-numbers.outputs.wise_version }} -m "W.I.S.E. JS API release on $(date +'%Y-%m-%d')"
+
+    - name: Push versions changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.WISE_PAT }}
+        tags: true
+
+    - name: Create API Release Notes
+      id: builder-notes
+      uses: mikepenz/release-changelog-builder-action@v3.5.0
+      with:
+        owner: WISE-Developers
+        repo: WISE_JS_API
+        toTag: ${{ steps.version-numbers.outputs.wise_version }}
+        fromTag: ${{ steps.last-tags.outputs.last_tag }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.WISE_PAT }}
+
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: ${{ steps.version-numbers.outputs.wise_version }}
+        body: ${{ steps.builder-notes.outputs.changelog }}
+        files: ./*.zip
+        tag_name: refs/tags/${{ steps.version-numbers.outputs.wise_version }}
