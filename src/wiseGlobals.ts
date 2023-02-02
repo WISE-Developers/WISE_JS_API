@@ -2081,7 +2081,7 @@ export class VectorMetadata {
   public checkValid(): Array<ValidationError> {
     const errs = new Array<ValidationError>();
     if (this.version == null) {
-      errs.push(new ValidationError("version", "Whether the Prometheus version metadata should be exported or not has not been set.", this));
+      errs.push(new ValidationError("version", "Whether the W.I.S.E. version metadata should be exported or not has not been set.", this));
     }
     if (this.scenName == null) {
       errs.push(new ValidationError("scenName", "Whether the scenario name metadata should be exported or not has not been set.", this));

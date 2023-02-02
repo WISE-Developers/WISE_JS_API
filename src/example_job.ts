@@ -613,7 +613,7 @@ function buildDogribLUT(): Array<fuels.FuelDefinition> {
     //fetch the default settings for some parameters from W.I.S.E. Builder
     let jDefaults = await new defaults.JobDefaults().getDefaultsPromise();
 
-    globals.WISELogger.getInstance().info('Building Prometheus job.');
+    globals.WISELogger.getInstance().info('Building W.I.S.E. job.');
     //set this to the location of the test files folder.
     let prom = new wise.WISE();
     //add the projection and elevation files as attachments
@@ -720,11 +720,6 @@ function buildDogribLUT(): Array<fuels.FuelDefinition> {
     osf1.outputs.outputWxPatches = true;
     osf1.outputs.outputWxStreams = true;
 
-    //stream output files to the MQTT connection
-    //prom.streamOutputToMqtt();
-    //stream output files to a GeoServer instance
-    //prom.streamOutputToGeoServer("admin", "password", "192.168.0.178:8080/geoserver", "prometheus", "prometheus_store", "EPSG:4326");
-     
     //test to see if all required parameters have been set
     let errors = prom.checkValid();
     if (errors.length > 0) {
