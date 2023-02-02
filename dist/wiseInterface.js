@@ -9,8 +9,7 @@
  * For an example see index.js.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FuelOptionType = exports.Scenario = exports.GustingOptions = exports.GustBias = exports.Gusting = exports.StopModellingOptions = exports.StopModellingThreshold = exports.StationStream = exports.StreamOptions = exports.TimestepSettings = exports.TargetReference = exports.AssetReference = exports.LayerInfo = exports.LayerInfoOptions = exports.BurningConditions = exports.BurningConditionRelative = exports.SinglePointIgnitionOptions = exports.MultiPointIgnitionOptions = exports.PolylineIgnitionOptions = exports.IgnitionReference = exports.TargetFile = exports.AssetFile = exports.AssetShapeType = exports.Ignition = exports.IgnitionType = exports.WeatherStation = exports.WeatherStream = exports.HFFMCMethod = exports.WISEInputsFiles = exports.FuelBreak = exports.FuelBreakType = exports.FuelPatch = exports.FromFuel = exports.FuelPatchType = exports.WeatherGrid = exports.WeatherGrid_GridFile = exports.WeatherGridType = exports.WeatherGridSector = exports.WeatherPatch = exports.WeatherPatch_WindDirection = exports.WeatherPatch_WindSpeed = exports.WeatherPatch_Precipitation = exports.WeatherPatch_RelativeHumidity = exports.WeatherPatch_Temperature = exports.WeatherPatchDetails = exports.WeatherPatchType = exports.WeatherPatchOperation = exports.GridFile = exports.GridFileType = exports.VersionInfo = void 0;
-exports.Admin = exports.StopPriority = exports.StartJobWrapper = exports.WISE = exports.JobOptions = exports.LoadBalanceType = exports.UnitSettings = exports.MassAreaUnit = exports.IntensityUnit = exports.VelocityUnit = exports.CoordinateUnit = exports.AngleUnit = exports.PercentUnit = exports.EnergyUnit = exports.MassUnit = exports.PressureUnit = exports.TemperatureUnit = exports.VolumeUnit = exports.AreaUnit = exports.DistanceUnit = exports.TimeUnit = exports.GeoServerOutputStreamInfo = exports.MqttOutputStreamInfo = exports.OutputStreamInfo = exports.WISEOutputs = exports.AssetStatsFile = exports.StatsFile = exports.StatsFileType = exports.SummaryFile = exports.VectorFile = exports.PerimeterTimeOverride = exports.VectorFileType = exports.Output_GridFile = exports.Output_FuelGridFile = exports.ExportTimeOverride = exports.Output_GridFileCompression = exports.Output_GridFileInterpolation = exports.WISEInputs = exports.FuelOption = void 0;
+exports.Admin = exports.StopPriority = exports.StartJobWrapper = exports.WISE = exports.JobOptions = exports.LoadBalanceType = exports.UnitSettings = exports.MassAreaUnit = exports.IntensityUnit = exports.VelocityUnit = exports.CoordinateUnit = exports.AngleUnit = exports.PercentUnit = exports.EnergyUnit = exports.MassUnit = exports.PressureUnit = exports.TemperatureUnit = exports.VolumeUnit = exports.AreaUnit = exports.DistanceUnit = exports.TimeUnit = exports.GeoServerOutputStreamInfo = exports.MqttOutputStreamInfo = exports.OutputStreamInfo = exports.WISEOutputs = exports.AssetStatsFile = exports.StatsFile = exports.StatsFileType = exports.SummaryFile = exports.VectorFile = exports.PerimeterTimeOverride = exports.VectorFileType = exports.Output_GridFile = exports.Output_FuelGridFile = exports.ExportTimeOverride = exports.Output_GridFileCompression = exports.Output_GridFileInterpolation = exports.WISEInputs = exports.FuelOption = exports.FuelOptionType = exports.Scenario = exports.GustingOptions = exports.GustBias = exports.Gusting = exports.StopModellingOptions = exports.StopModellingThreshold = exports.StationStream = exports.StreamOptions = exports.TimestepSettings = exports.TargetReference = exports.AssetReference = exports.LayerInfo = exports.LayerInfoOptions = exports.BurningConditions = exports.BurningConditionRelative = exports.SinglePointIgnitionOptions = exports.MultiPointIgnitionOptions = exports.PolylineIgnitionOptions = exports.IgnitionReference = exports.TargetFile = exports.AssetFile = exports.AssetShapeType = exports.Ignition = exports.IgnitionType = exports.WeatherStation = exports.WeatherStream = exports.HFFMCMethod = exports.WISEInputsFiles = exports.FuelBreak = exports.FuelBreakType = exports.FuelPatch = exports.FromFuel = exports.FuelPatchType = exports.WeatherGrid = exports.WeatherGrid_GridFile = exports.WeatherGridType = exports.WeatherGridSector = exports.WeatherPatch = exports.WeatherPatch_WindDirection = exports.WeatherPatch_WindSpeed = exports.WeatherPatch_Precipitation = exports.WeatherPatch_RelativeHumidity = exports.WeatherPatch_Temperature = exports.WeatherPatchDetails = exports.WeatherPatchType = exports.WeatherPatchOperation = exports.GridFile = exports.GridFileType = exports.VersionInfo = void 0;
 /** ignore this comment */
 const fs = require("fs");
 const luxon_1 = require("luxon");
@@ -3624,7 +3623,8 @@ class GustingOptions {
     }
 }
 exports.GustingOptions = GustingOptions;
-GustingOptions.PARAM_GUSTING_OPTIONS = "gusting_options";/**
+GustingOptions.PARAM_GUSTING_OPTIONS = "gusting_options";
+/**
  * A simulation scenario.
  * @author "Travis Redpath"
  */
@@ -5859,7 +5859,7 @@ var StatsFileType;
     StatsFileType[StatsFileType["JSON_COLUMN"] = 3] = "JSON_COLUMN";
 })(StatsFileType = exports.StatsFileType || (exports.StatsFileType = {}));
 /**
- * An output file to mimic the Prometheus stats view. Contains
+ * An output file to mimic the W.I.S.E. stats view. Contains
  * stats from each timestep of a scenarios simulation.
  */
 class StatsFile {

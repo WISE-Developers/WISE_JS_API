@@ -6459,7 +6459,7 @@ export enum StatsFileType {
 }
 
 /**
- * An output file to mimic the Prometheus stats view. Contains
+ * An output file to mimic the W.I.S.E. stats view. Contains
  * stats from each timestep of a scenarios simulation.
  */
 export class StatsFile {
