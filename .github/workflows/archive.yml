@@ -37,7 +37,7 @@ jobs:
     - name: Archive files
       shell: pwsh
       run: |
-        Compress-Archive -DestinationPath ${{ steps.version-numbers.outputs.wise_version }}.zip -Path dist,proto,scripts,config,index.js,index.d.ts,package.json,LICENSE
+        Compress-Archive -DestinationPath WISE_JS_API-${{ steps.version-numbers.outputs.wise_version }}.zip -Path dist,proto,scripts,config,index.js,index.d.ts,package.json,LICENSE
       
     - name: Archive files
       run: |
