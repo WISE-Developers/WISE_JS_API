@@ -7,7 +7,7 @@ module.exports = {
     fbp: require('./dist/fbp'),
     forecast: require('./dist/forecast'),
     fwi: require('./dist/fwi'),
-    psaas: require('./dist/wiseInterface'),
+    wise: require('./dist/wiseInterface'),
     solar: require('./dist/solar'),
     weather: require('./dist/weather'),
     fuels: require('./dist/fuels')
