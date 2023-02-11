@@ -6,7 +6,7 @@ option csharp_namespace = "WISE_API.NET.Proto";
 
 import "google/protobuf/wrappers.proto";
 
-package wise.confic;
+package wise.api;
 
 /**
  * General server configuration details.
@@ -33,9 +33,6 @@ message ServerConfiguration {
 
     //The directory where sample data is stored for testing purposes
     string exampleDirectory = 7;
-
-    //Settings that are only used by W.I.S.E. Manager
-    ManagerSettings manager_settings = 8;
 
     //Are the W.I.S.E. Manager settings already setup for v2
     google.protobuf.BoolValue already_v2 = 9;
