@@ -25,8 +25,6 @@ client.JobManager.setDefaults({
 //globals.SocketMsg.inlineThrowOnError = true;
 //the directory of the test files
 let localDir = serverConfig.exampleDirectory;
-//the version of the example data to use
-let wiseVersion = /*vers*/'6.2.6.0'/*/vers*/;
 
 //make sure the local directory has been configured
 if (localDir.includes('@JOBS@')) {
@@ -617,8 +615,8 @@ function buildDogribLUT(): Array<fuels.FuelDefinition> {
     //set this to the location of the test files folder.
     let prom = new wise.WISE();
     //add the projection and elevation files as attachments
-    let projContents = fs.readFileSync(localDir + wiseVersion + '/test/elevation.prj');
-    let elevContents = fs.readFileSync(localDir + wiseVersion + '/test/elevation.asc');
+    let projContents = fs.readFileSync(localDir + '/test/elevation.prj');
+    let elevContents = fs.readFileSync(localDir + '/test/elevation.asc');
     let projAttachment = prom.addAttachment('elevation.prj', projContents);
     let elevAttachment = prom.addAttachment('elevation.asc', elevContents);
     if (!projAttachment || !elevAttachment) {
@@ -627,37 +625,37 @@ function buildDogribLUT(): Array<fuels.FuelDefinition> {
     prom.setProjectionFile('' + projAttachment);
     prom.setElevationFile('' + elevAttachment);
     //add the rest of the files as paths to locations on disk
-    prom.setFuelmapFile(localDir + wiseVersion + '/test/fbp_fuel_type.asc');
+    prom.setFuelmapFile(localDir + '/test/fbp_fuel_type.asc');
 
 
-    prom.setLutFile(localDir + wiseVersion + '/test/fbp_lookup_table.lut');
+    prom.setLutFile(localDir + '/test/fbp_lookup_table.lut');
     //prom.setLutDefinition(buildDogribLUT());
 
 
     prom.setTimezoneByValue(25); //hard coded to CDT, see example_timezone.js for an example getting the IDs
-    let degree_curing = prom.addGridFile(localDir + wiseVersion + '/test/degree_of_curing.asc',
-        localDir + wiseVersion + '/test/degree_of_curing.prj', wise.GridFileType.DEGREE_CURING);
+    let degree_curing = prom.addGridFile(localDir + '/test/degree_of_curing.asc',
+        localDir + '/test/degree_of_curing.prj', wise.GridFileType.DEGREE_CURING);
     let fuel_patch = prom.addLandscapeFuelPatch("O-1a Matted Grass", "O-1b Standing Grass");
-    let gravel_road = prom.addFileFuelBreak(localDir + wiseVersion + '/test/access_gravel_road.kmz');
+    let gravel_road = prom.addFileFuelBreak(localDir + '/test/access_gravel_road.kmz');
     gravel_road.width = 10.0;
     gravel_road.setName("Gravel Road");
-    let unimproved_road = prom.addFileFuelBreak(localDir + wiseVersion + '/test/access_unimproved_road.kmz');
+    let unimproved_road = prom.addFileFuelBreak(localDir + '/test/access_unimproved_road.kmz');
     unimproved_road.width = 10.0;
     unimproved_road.setName("Unimproved Road");
-    let river = prom.addFileFuelBreak(localDir + wiseVersion + '/test/hydrology_river.kmz');
+    let river = prom.addFileFuelBreak(localDir + '/test/hydrology_river.kmz');
     river.width = 25.0;
     river.setName("Rivers");
-    let stream = prom.addFileFuelBreak(localDir + wiseVersion + '/test/hydrology_stream.kmz');
+    let stream = prom.addFileFuelBreak(localDir + '/test/hydrology_stream.kmz');
     stream.width = 20.0;
     stream.setName("Streams");
     let ws = prom.addWeatherStation(1483.0, new globals.LatLon(51.654700, -115.361700));
-    let b3Yaha = ws.addWeatherStream(localDir + wiseVersion + '/test/weather_B3_hourly_Sep25toOct30_2001.txt', 94.0, 17,
+    let b3Yaha = ws.addWeatherStream(localDir + '/test/weather_B3_hourly_Sep25toOct30_2001.txt', 94.0, 17,
         wise.HFFMCMethod.LAWSON, 89.0, 58.0, 482.0, 0.0, DateTime.fromISO("2001-09-25"), DateTime.fromISO("2001-10-30"));
     let wpatch = prom.addLandscapeWeatherPatch(DateTime.fromISO("2001-10-16T13:00:00-05:00"), globals.Duration.createTime(13, 0, 0, false),
         DateTime.fromISO("2001-10-16T21:00:00-05:00"), globals.Duration.createTime(21, 0, 0, false));
     wpatch.setWindDirOperation(wise.WeatherPatchOperation.PLUS, 10);
     wpatch.setRhOperation(wise.WeatherPatchOperation.PLUS, 5);
-    let wpatch2 = prom.addFileWeatherPatch(localDir + wiseVersion + '/test/weather_patch_wd270.kmz', DateTime.fromISO("2001-10-16T13:00:00-05:00"),
+    let wpatch2 = prom.addFileWeatherPatch(localDir + '/test/weather_patch_wd270.kmz', DateTime.fromISO("2001-10-16T13:00:00-05:00"),
         globals.Duration.createTime(13, 0, 0, false), DateTime.fromISO("2001-10-16T21:00:00-05:00"), globals.Duration.createTime(21, 0, 0, false));
     wpatch2.setWindDirOperation(wise.WeatherPatchOperation.EQUAL, 270);
     //create the ignition points
@@ -732,74 +730,76 @@ function buildDogribLUT(): Array<fuels.FuelDefinition> {
         let wrapper: wise.StartJobWrapper = null;
         //assume we will always have a backend that is capable of using validation now as the versioning is no longer compabible with semver
         wrapper = await prom.validateJobPromise();
-        //trim the name of the newly started job
-        let jobName = wrapper.name.replace(/^\s+|\s+$/g, '');
-        //a manager for listening for status messages
-        let manager = new client.JobManager(jobName);
-        //start the job manager
-        await manager.start();
-        //if possible the job will first be validated, catch the validation response
-        manager.on('validationReceived', (args) => {
-            //the FGM could not be validated. It's possible that the W.I.S.E. version used doesn't support validation
-            if (!args.validation.success) {
-                //this probably means that the W.I.S.E. Manager and W.I.S.E. versions are different, the job may be able to be started without validation
-                //at this point in time but we'll just exit and consider this an unexpected setup
+        if (serverConfig.mqttUsername) {
+            //trim the name of the newly started job
+            let jobName = wrapper.name.replace(/^\s+|\s+$/g, '');
+            //a manager for listening for status messages
+            let manager = new client.JobManager(jobName);
+            //start the job manager
+            await manager.start();
+            //if possible the job will first be validated, catch the validation response
+            manager.on('validationReceived', (args) => {
+                //the FGM could not be validated. It's possible that the W.I.S.E. version used doesn't support validation
+                if (!args.validation.success) {
+                    //this probably means that the W.I.S.E. Manager and W.I.S.E. versions are different, the job may be able to be started without validation
+                    //at this point in time but we'll just exit and consider this an unexpected setup
+                    args.manager.dispose();//close the connection that is listening for status updates
+                    console.log("Validation could not be run, check your W.I.S.E. version");
+                }
+                //errors were found in the FGM
+                else if (!args.validation.valid) {
+                    args.manager.dispose();//close the connection that is listening for status updates
+                    console.log("The submitted FGM is not valid");
+                    //just dump the error list, let the user sort through it
+                    console.log(args.validation.error_list);
+                }
+                //the FGM is valid, start it running
+                else {
+                    console.log("FGM valid, starting job");
+                    //add a delay, shouldn't be needed but it's here so the user can see the process happening
+                    delay(1000)
+                        .then(() => {
+                            //use rerun to start the job. Rerun can be used on any job that is in
+                            //the finished job list in W.I.S.E. Manager.
+                            args.manager.broadcastJobRerun(jobName);
+                        });
+                }
+            });
+            //when the W.I.S.E. job triggers that it is complete, shut down the listener
+            manager.on('simulationComplete', (args) => {
                 args.manager.dispose();//close the connection that is listening for status updates
-                console.log("Validation could not be run, check your W.I.S.E. version");
-            }
-            //errors were found in the FGM
-            else if (!args.validation.valid) {
-                args.manager.dispose();//close the connection that is listening for status updates
-                console.log("The submitted FGM is not valid");
-                //just dump the error list, let the user sort through it
-                console.log(args.validation.error_list);
-            }
-            //the FGM is valid, start it running
-            else {
-                console.log("FGM valid, starting job");
-                //add a delay, shouldn't be needed but it's here so the user can see the process happening
-                delay(1000)
-                    .then(() => {
-                        //use rerun to start the job. Rerun can be used on any job that is in
-                        //the finished job list in W.I.S.E. Manager.
-                        args.manager.broadcastJobRerun(jobName);
-                    });
-            }
-        });
-        //when the W.I.S.E. job triggers that it is complete, shut down the listener
-        manager.on('simulationComplete', (args) => {
-            args.manager.dispose();//close the connection that is listening for status updates
-            if (args.hasOwnProperty("time") && args.time != null) {
-               console.log(`Simulation complete at ${args.time.toISOString()}.`);
-            }
-            else {
-                console.log("Simulation complete.");
-            }
-        });
-        //catch scenario failure
-        manager.on('scenarioComplete', (args) => {
-            if (!args.success) {
                 if (args.hasOwnProperty("time") && args.time != null) {
-                   console.log(`At ${args.time.toISOString()} a scenario failed: ${args.errorMessage}`);
+                console.log(`Simulation complete at ${args.time.toISOString()}.`);
                 }
                 else {
-                    console.log(`A scenario failed: ${args.errorMessage}`);
+                    console.log("Simulation complete.");
                 }
-            }
-        });
-        //listen for statistics at the end of timesteps
-        manager.on('statisticsReceived', (args) => {
-            if (args.hasOwnProperty("time") && args.time != null) {
-               console.log(`Received statistics at ${args.time.toISOString()}`);
-               for (const stat of args.statistics) {
-                   console.log("    Statistic " + stat.key + " with value " + stat.value);
-               }
-            }
-            else {
+            });
+            //catch scenario failure
+            manager.on('scenarioComplete', (args) => {
+                if (!args.success) {
+                    if (args.hasOwnProperty("time") && args.time != null) {
+                    console.log(`At ${args.time.toISOString()} a scenario failed: ${args.errorMessage}`);
+                    }
+                    else {
+                        console.log(`A scenario failed: ${args.errorMessage}`);
+                    }
+                }
+            });
+            //listen for statistics at the end of timesteps
+            manager.on('statisticsReceived', (args) => {
+                if (args.hasOwnProperty("time") && args.time != null) {
+                console.log(`Received statistics at ${args.time.toISOString()}`);
                 for (const stat of args.statistics) {
-                    console.log("Received statistic " + stat.key + " with value " + stat.value);
+                    console.log("    Statistic " + stat.key + " with value " + stat.value);
                 }
-            }
-        });
+                }
+                else {
+                    for (const stat of args.statistics) {
+                        console.log("Received statistic " + stat.key + " with value " + stat.value);
+                    }
+                }
+            });
+        }
     }
 })().then(x => console.log("Job created, waiting for results."));
