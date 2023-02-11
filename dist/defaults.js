@@ -36,7 +36,7 @@ class ServerConfiguration {
         try {
             var rootPath;
             try {
-                rootPath = path.dirname(require.resolve("wise-js-api/package.json"));
+                rootPath = path.dirname(require.resolve("WISE_JS_API/package.json"));
             }
             catch (e2) {
                 //if the package can't be resolved it will throw a MODULE_NOT_FOUND error
@@ -47,7 +47,7 @@ class ServerConfiguration {
             //if the user didn't specify a job directory try loading one from the npm configuration
             if (this.configLocation == null || this.configLocation.length == 0) {
                 const conf = npmConf();
-                this.configLocation = conf.get('wise-js-api:job_directory');
+                this.configLocation = conf.get('WISE_JS_API:job_directory');
                 //use the config.json from the jobs directory if available, otherwise look locally
                 if (this.configLocation == null || this.configLocation.length == 0) {
                     const internalConfigPath = path.join(rootPath, "config", "config.json");
