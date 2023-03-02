@@ -94,5 +94,6 @@ jobs:
       with:
         name: ${{ steps.version-numbers.outputs.wise_top_version }}
         body: ${{ steps.builder-notes.outputs.changelog }}
+        prerelease: true
         files: ./*.zip
         tag_name: refs/tags/${{ steps.version-numbers.outputs.wise_top_version }}
